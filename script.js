@@ -33,10 +33,12 @@ function Student(name, surname, lastName, numberOfStudentTicket, birthdayYear, a
             }
             if(!correctRoom){
                 console.error("the room does not exist");
+                room = false;
                 return false;
             }
             if(!isPlace){
                 console.error("this room is full");
+                room = false;
                 return false;
             }
             
@@ -56,8 +58,9 @@ function createRoom(number){
 }
 
 function createStudent( name, surname, lastName, numberOfStudentTicket, birthdayYear, address, sex, familyStatus, stipend, room){
-    student = new Student(name, surname, lastName, numberOfStudentTicket, birthdayYear, address, sex, familyStatus, stipend);
+    let student = new Student(name, surname, lastName, numberOfStudentTicket, birthdayYear, address, sex, familyStatus, stipend);
     student.room = room;
+    students.push(student);
 }
 
 rooms = [];
@@ -65,6 +68,7 @@ createRoom(1);
 createRoom(2);
 createRoom(3);
 
+students = [];
 createStudent('Ivan', 'Ivanov', 'Ivanovich', 0001, 2000, 'Lviv', 'men', 'unmarried', 1000,1);
 createStudent('Petya', 'Petrov', 'Petrovich', 0002, 2001, 'Kiev', 'men', 'married', 1000,1);
 createStudent('Vasya', 'Vasylyov', 'Vasylyovich', 0003, 1999, 'Odessa', 'men', 'unmarried', 1000,1);
@@ -72,3 +76,4 @@ createStudent('Nataly', 'Ivanova', 'Ivanivna', 0004, 1999, 'Kharkiv', 'women', '
 createStudent('Yuliya', 'Petrova', 'Petrivna', 0005, 2000, 'Khmelnytskyi', 'women', 'married', 1000,2);
 createStudent('Anna', 'Vasylyova', 'Vasylivna', 0006, 2001, 'Uzhhorod', 'women', 'unmarried', 1000, 2);
 console.log(rooms);
+console.log(students);
