@@ -96,7 +96,6 @@ function Student(name, surname, lastName, numberOfStudentTicket, birthdayYear, a
     this.hobby = hobby;
     this.raiting = 0;
 
-
     Object.defineProperty(this, "room", {
         set: function(value){
             let correctRoom = false;
@@ -161,6 +160,145 @@ function Lesson(lessonName, teacher){
     this.teacher = teacher;
 }
 
+function Book(name, autorName, autorSurname){
+    this.name = name;
+    this.autorName = autorName;
+    this.autorName = autorSurname;
+}
+
+function Library(){
+    this.nums = 0000;
+    this.books = {};
+    this.students = [];
+}
+
+Library.prototype.addBooks = function(name, autorName, autorSurname, count, price){
+    if(validate(arguments, arguments.callee.length) === false){
+        console.error(`inncorect data`);
+        return false;
+    }
+    let book = new Book(name, autorName, autorSurname);
+    numbers = [];
+    for (let i = 0; i < count; i++) {
+        this.nums++;
+        this.nums = this.nums.toString().padStart(4, '0');
+        numbers[this.nums] = "present";  
+    }
+    this.books[book.name] = {
+        "autorName" : autorName,
+        "autorSurname" : autorSurname,
+        "count" : count,
+        "isPresent" : numbers,
+        "price" : price,
+    }
+}
+
+Library.prototype.getBook = function(studentName, studentSurname, bookName, autorName, autorSurname, year){
+    let correctBook = false;   
+    let numberBook; 
+    if(validate(arguments, arguments.callee.length) === false){
+        console.error(`inncorect data`);
+        return false;
+    }
+    groups.forEach(item => {
+        item.students.forEach(element => {
+            if(element.surname.indexOf(studentSurname) != -1 && element.name.indexOf(studentName) != -1){
+                correctStudent = true;
+            }            
+        })
+    });
+    if(!correctStudent){
+        console.error(`student ${surname} ${name} is not defined`);
+        return false;
+    }
+
+    for (const key in this.books) {
+        if(key === bookName && this.books[key]['autorName'] === autorName && this.books[key]['autorSurname'] == autorSurname){
+            correctBook = true;
+            if(this.books[key]['count'] > 0){
+                this.books[key]['count']--;
+                book: for(value in this.books[key]['isPresent']){
+                    if(this.books[key]['isPresent'][value] == 'present'){  
+                        numberBook = value;
+                        this.books[key]['isPresent'][value] = {
+                            surname : studentSurname,
+                            name : studentName,                            
+                        } 
+                        break book;
+                    }
+                }
+                for (let i = 0; i <  this.students.length; i++) {
+                    if((this.students[i]["studentSurname"] == studentSurname) && (this.students[i]["studentName"] == studentName)){
+                        if(this.students[i].debt + this.books[key]["price"] > 100){
+                            console.error(`limit exceeded`);
+                            return false;
+                        }else {
+                            this.students[i].debt += this.books[key]["price"];
+                            this.students[i].books.push({[numberBook] : year});
+                        }
+                        return true;
+                    }                   
+                }
+                let student = {
+                    "studentSurname" : studentSurname,
+                    "studentName" : studentName,
+                    "books" : [{[numberBook] : year}],
+                    "debt" : this.books[key]["price"],
+                }
+                this.students.push(student);
+            } else {
+                correctBook = false;
+            }
+        }
+    }
+    if(!correctBook){
+        console.error(`book ${bookName} is not defined`);
+        return false;
+    }
+}
+
+Library.prototype.giveBook = function(studentName, studentSurname, bookName, autorName, autorSurname){
+    let numberBook;     
+    let correctBook = false;
+    let correctStudent = false;    
+    if(validate(arguments, arguments.callee.length) === false){
+        console.error(`inncorect data`);
+        return false;
+    }
+    for (const key in this.books) {
+        if(key === bookName && this.books[key]['autorName'] === autorName && this.books[key]['autorSurname'] == autorSurname){
+            book: for(value in this.books[key]['isPresent']){
+                if(this.books[key]['isPresent'][value]['surname'] == studentSurname && this.books[key]['isPresent'][value]['name'] == studentName){                        
+                    correctBook = true;                
+                    this.books[key]['isPresent'][value] = "present";
+                    this.books[key]['count']++;
+                    numberBook = value;
+                    break book;
+                }
+            }
+            for (let i = 0; i <  this.students.length; i++) {                
+                if((this.students[i]["studentSurname"] === studentSurname) && (this.students[i]["studentName"] === studentName)){
+                    correctStudent = true;
+                    this.students[i].debt -= this.books[key]["price"];
+                    let returnedBook = this.students[i].books.filter(item => !item[numberBook])
+                    this.students[i].books = returnedBook;
+                    return true;
+                }                   
+            }
+        }
+    }
+    if(!correctStudent){
+        console.error(`student ${studentSurname} ${studentName} is not defined in Library`);
+        return false;
+    }
+    if(!correctBook){
+        console.error(`book ${bookName} is not defined`);
+        return false;
+    }
+}
+
+
+// ======= functions - work with object ========
 function validate(argumentsFunc, len){
     if(argumentsFunc === undefined || argumentsFunc.length !== len){
         return false;
@@ -171,7 +309,7 @@ function validate(argumentsFunc, len){
                 if(typeof(argumentsFunc[i][j]) === "string"){
                     argumentsFunc[i][j] = argumentsFunc[i].trim();
                 }
-                if(argumentsFunc[i][j] === ''){
+                if(argumentsFunc[i][j] === '' || argumentsFunc[i][j] === undefined){
                     return false;
                 }
             }
@@ -179,7 +317,7 @@ function validate(argumentsFunc, len){
             if(typeof(argumentsFunc[i]) === "string"){
                 argumentsFunc[i] = argumentsFunc[i].trim();
             }
-            if(argumentsFunc[i] === ''){                            
+            if(argumentsFunc[i] === '' || argumentsFunc[i] === undefined){                            
                 return false;
             }
         }
@@ -223,7 +361,6 @@ function addHobby(surname, name, hobby){
         return false;
     }
     let correctStudent = false;
-
     for (let i = 0; i < groups.length; i++) {
         for (let j = 0; j < groups[i].students.length; j++) {
             if(surname == groups[i].students[j].surname && name == groups[i].students[j].name){
@@ -310,8 +447,6 @@ function addLessonToGroup(lessonName, groupNum){
     }
     let correctLesson = false;
     let correctGroup = false;
-
-
     for (let i = 0; i < lessons.length; i++) {
         if(lessonName  == lessons[i].lessonName){
             correctLesson = true;
@@ -338,11 +473,9 @@ function funcSetMark(param ,groupNum, surname, name, lessonName, marks){
         console.error(`inncorect data`);
         return false;
     }
-
     let correctLesson = false;
     let correctGroup = false;
     let correctStudent = false;
-
     for (let i = 0; i < groups.length; i++) {
         if(groupNum == groups[i].number){
             correctGroup = true;
@@ -379,6 +512,7 @@ function funcSetMark(param ,groupNum, surname, name, lessonName, marks){
         return false;
     }
 }
+
 // Stipend
 function funcSetStipend(){
     for (let i = 0; i < groups.length; i++) {
@@ -424,6 +558,62 @@ function showStudentsWithSomeRaiting(x, y){
             }   
         }
         // res += "============================== \n";      
+    }
+    res += "\n"
+    return res;
+}
+
+// task 3 Cписок студентів та книг що не повернені більше року (з підсумовуванням кількості книг та грошового боргу студента)
+function showDebt(){
+    let date = new Date();
+    let studentsDebt = [];
+    let student;
+    let arr;
+    date = date.getFullYear();
+    res = "============== TASK 3 ================" + "\n";
+    for (let i = 0; i < library.students.length; i++) {
+        for (let j = 0; j < library.students[i].books.length; j++) {
+            for(const key in library.students[i].books[j]){
+                arr = [];
+                if(date - library.students[i].books[j][key] >= 1) {
+                    arr = studentsDebt.filter(item => item.surname == library.students[i].studentSurname && item.name == library.students[i].studentName);
+                    if(arr.length == 0){
+                        student = {
+                            ["surname"] : library.students[i].studentSurname,
+                            ["name"] : library.students[i].studentName,
+                            ["books"] : {[key] : library.students[i].books[j][key]},
+                            ["debt"] : library.students[i].debt,
+                            ["count"] : library.students[i].books.length
+                        }
+                        studentsDebt.push(student);
+                    } else {
+                        studentsDebt.forEach(element => {
+                            if(element["surname"] == library.students[i].studentSurname && element["name"] == library.students[i].studentName){
+                                element["books"][key] = library.students[i].books[j][key]
+                            }
+                        });
+                    }
+                }
+            } 
+        }
+    }
+    for (let i = 0; i < studentsDebt.length; i++) {
+        res += "Student: " + studentsDebt[i].surname + " " + studentsDebt[i].name + "\n";
+        res += "Count books: " + studentsDebt[i].count + "\n" + "Books: \n";
+        
+
+        for (const key in studentsDebt[i].books) {
+            for (const value in library.books) {
+                for (const book in library.books[value].isPresent) {
+                    if( key == book){
+                        res += "(Book Num " + key + ") " + value + " " + library.books[value]["autorName"] +" " + library.books[value]["autorSurname"]  + "\n";
+                    }
+                }
+            }
+        }
+        res += '\n'
+
+        
     }
     res += "\n"
     return res;
@@ -478,6 +668,12 @@ createLesson("Math", "Sidorov", "Sidor");
 createLesson("Literature", "Andreev", "Andrew");
 createLesson("IT", "Olehov", "Oleh");
 
+library = new Library();
+library.addBooks("Захар Беркут" , "Іван", "Франко", 5, 20);
+library.addBooks("Тарас Бульба" , "Микола", "Гоголь", 3, 30);
+library.addBooks("Тигролови" , "Іван", "Багряний", 7, 50);
+library.addBooks("Лісова пісня" , "Леся", "Українка", 9, 40);
+
 createStudent(1, 'Ivan', 'Ivanov', 'Ivanovich', 0001, 2000, 'Lviv', 'man', 'unmarried', 1000, 1);
 createStudent(1, 'Petya', 'Petrov', 'Petrovich', 0002, 2001, 'Kiev', 'man', 'married', 1000, 1);
 createStudent(1, 'Vasya', 'Vasylyov', 'Vasylyovich', 0003, 1999, 'Odessa', 'man', 'unmarried', 1000, 1);
@@ -530,11 +726,28 @@ funcSetMark('exam', 2, 'Vasylyova', 'Anna', "IT", 5);
 
 funcSetStipend();
 
+library.getBook('Nataly', 'Ivanova', "Захар Беркут",  "Іван", "Франко", 2015);
+library.getBook('Nataly', 'Ivanova', "Захар Беркут",  "Іван", "Франко", 2017);
+library.getBook('Nataly', 'Ivanova', "Тигролови",  "Іван", "Багряний", 2019);
+
+library.getBook('Anna', 'Vasylyova', "Захар Беркут",  "Іван", "Франко", 2020);
+library.getBook('Anna', 'Vasylyova', "Захар Беркут",  "Іван", "Франко", 2020);
+library.getBook('Anna', 'Vasylyova', "Тигролови",  "Іван", "Багряний", 2020);
+
+library.getBook('Vasya', 'Vasylyov', "Тарас Бульба" , "Микола", "Гоголь", 2020);
+library.getBook('Vasya', 'Vasylyov', "Тарас Бульба" , "Микола", "Гоголь", 2020);
+library.getBook('Vasya', 'Vasylyov', "Тарас Бульба" , "Микола", "Гоголь", 2018);
+
+library.giveBook('Anna', 'Vasylyova', "Захар Беркут",  "Іван", "Франко");
+
 // task 1 Cписок студентів по групах (result)
 console.log(showStudents());
 
 // task 2 студентів які мають рейтинг від X до Y (result)
 console.log(showStudentsWithSomeRaiting(10, 17));
+
+// task 3 Cписок студентів та книг що не повернені більше року (з підсумовуванням кількості книг та грошового боргу студента) (result)
+console.log(showDebt());
 
 // task 4 Довідка для студента про його рейтинг та розмір стипендії (result)
 console.log(showRaitingStipend("Ivanov" , "Ivan"));
