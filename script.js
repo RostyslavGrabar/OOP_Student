@@ -1,20 +1,20 @@
 function Group(number){
-    let groupLeader;
+    // let groupLeader;
     this.number = number;
-    this.groupLeader = groupLeader;
+    this._groupLeader;
     this.students = [];
     this.lessons = [];
     Object.defineProperty(this, "groupLeader", {
         set: function(value){
-            if(groupLeader){
+            if(this._groupLeader){
                 console.error("in this group the groupLeader is already  appointed");
                 return false;
             }
             value.setGroupLeader();
-            groupLeader = value;
+            this._groupLeader = value;
         },
         get: function(){
-            return groupLeader;
+            return this._groupLeader;
         }
     })   
 }
@@ -81,8 +81,6 @@ function Rooms(number){
 }
 
 function Student(name, surname, lastName, numberOfStudentTicket, birthdayYear, address, sex, familyStatus, stipend){
-    let room;
-    let hobby;
     this.name = name;
     this.surname = surname;
     this.lastName = lastName;
@@ -92,8 +90,8 @@ function Student(name, surname, lastName, numberOfStudentTicket, birthdayYear, a
     this.sex = sex;
     this.familyStatus = familyStatus;
     this.stipend = stipend;
-    this.room = room;
-    this.hobby = hobby;
+    this._room;
+    this._hobby;
     this.raiting = 0;
 
     Object.defineProperty(this, "room", {
@@ -106,32 +104,32 @@ function Student(name, surname, lastName, numberOfStudentTicket, birthdayYear, a
                     if(rooms[i].place > 0){
                         rooms[i].place--;
                         isPlace = true;
-                        room = value;
+                        this._room = value;
                     }
                 }
             }
             if(!correctRoom){
                 console.error("the room does not exist");
-                room = false;
+                this._room = false;
                 return false;
             }
             if(!isPlace){
                 console.error("this room is full");
-                room = false;
+                this._room = false;
                 return false;
             }
             
         },
         get: function(){
-            return room;
+            return this._room;
         }
     }),    
     Object.defineProperty(this, "hobby", {
         set: function(value){
-            hobby = value.trim();
+            this._hobby = value.trim();
         },
         get: function(){
-            return hobby;
+            return this._hobby;
         }
     })    
 }
